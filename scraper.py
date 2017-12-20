@@ -13,6 +13,9 @@ def extract_job_titles(soup, listings):
     return jobs
 
 def extract_job_companies(soup, listings):
+    """ Looks through ever div tag with attribute class='row' and then searches for 
+    spans with class company or spans with class result-link-source because these spans 
+    contain the job company names."""
     companies = []
     for div_tag in listings:
         spans_with_company_class = div_tag.find_all(name="span", attrs={"class":"company"})
@@ -27,6 +30,8 @@ def extract_job_companies(soup, listings):
     return companies
 
 def extract_job_locations(soup, listings):
+    """ Looks through every div tag (a job listing) and finds the span tag with class
+    location and extracts the location of the job listing """
     locations = []
     for div_tag in listings:
         for location_span in div_tag.find_all(name="span", attrs={"class":"location"}):
