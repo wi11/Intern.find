@@ -1,3 +1,6 @@
+import requests
+import pandas as pd
+import time
 import bs4
 from bs4 import BeautifulSoup
 
@@ -37,3 +40,21 @@ def extract_job_locations(soup, listings):
         for location_span in div_tag.find_all(name="span", attrs={"class":"location"}):
             locations.append(location_span.text.strip())
     return locations
+
+def scrape(max_results_per_state, state_set, data):
+    for state in state_set:
+        for start in range(0, max_results_per_state, 10):
+            URL = "https://www.indeed.com/jobs?q=Software+intern&l=" + str(state) + "&start="  + str(start)
+            page = requests.get(URL)
+            time.sleep(1)
+            soup = BeautifulSoup(page.text, "lxml", from_encoding="utf-8")
+            listings = soup.find_all(name="div", attrs={"class":"row"})
+            titles = extract_job_titles(soup, listings)
+            companies = extract_job_companies(soup, listings)
+            locations = extract_job_locations(soup, listings)
+            data["Job Title"].extend(titles)
+            data["Company"].extend(companies)
+            data["Location"].extend(locations)
+
+    sample_df = pd.DataFrame(data)
+    return sample_df
